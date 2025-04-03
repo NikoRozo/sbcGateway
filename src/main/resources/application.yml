@@ -1,0 +1,30 @@
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: sbcProducts
+          uri: lb://sbcProducts
+          predicates:
+            - Path=/api/products/**
+            - Header=token, 123456
+            - Method=GET, POST
+            - Query=color, verde
+            - Cookie=color, red
+          filters:
+            - StripPrefix=2
+            - name: SampleCookie
+              args:
+                name: user
+                value: Niko
+                message: Hola mi mensaje personalizado para producto
+        - id: sbcItems
+          uri: lb://sbcItems
+          predicates:
+            - Path=/api/items/**
+          filters:
+            - StripPrefix=2
+            - AddRequestHeader=token-request, 123456
+            - AddResponseHeader=token-response, 654321
+            - AddRequestParameter=name, Niko
+            - SampleCookie=user, Niko, Hola mi mensaje personalizado para producto
+            - SetResponseHeader=Content-Type, application/json
